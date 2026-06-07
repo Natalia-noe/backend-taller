@@ -32,31 +32,50 @@ def register(request):
         }, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
     """Login de cliente"""
+
     username = request.data.get('username')
     password = request.data.get('password')
 
+    print("========== LOGIN APP ==========")
+    print("DATA:", request.data)
+    print("USERNAME:", repr(username))
+    print("PASSWORD:", repr(password))
+
     user = authenticate(username=username, password=password)
 
+    print("USER:", user)
+
     if user is None:
-        return Response({'error': 'Credenciales inválidas'}, status=status.HTTP_401_UNAUTHORIZED)
+        print("ERROR: usuario no autenticado")
+        return Response(
+            {'error': 'Credenciales inválidas'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    print("ROLE:", user.role)
 
     if user.role not in (Role.CLIENT, Role.TECHNICIAN):
+        print("ERROR: rol no permitido")
         return Response(
             {'error': 'Esta cuenta no puede usar la app móvil'},
             status=status.HTTP_403_FORBIDDEN,
         )
+
     if user.role == Role.TECHNICIAN and not getattr(user, 'technician_profile', None):
+        print("ERROR: sin technician_profile")
         return Response(
             {'error': 'Cuenta de técnico sin perfil vinculado. Contacta al administrador.'},
             status=status.HTTP_403_FORBIDDEN,
         )
 
+    print("LOGIN OK:", user.username)
+
     refresh = RefreshToken.for_user(user)
+
     return Response({
         'user': UserSerializer(user).data,
         'tokens': {
@@ -64,7 +83,6 @@ def login(request):
             'access': str(refresh.access_token),
         }
     })
-
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
