@@ -245,3 +245,7 @@ ASSIGNMENT_REQUIRE_SUBSCRIPTION = os.getenv(
 # Django Eventstream (SSE)
 EVENTSTREAM_ALLOW_ORIGINS = CORS_ALLOWED_ORIGINS
 EVENTSTREAM_CHANNELMANAGER_CLASS = 'apps.notifications.channel_manager.PanelWebChannelManager'
+
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()
+]
