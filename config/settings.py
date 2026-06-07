@@ -185,6 +185,9 @@ _default_cors = 'http://localhost:4200,http://127.0.0.1:4200,http://192.168.100.
 CORS_ALLOWED_ORIGINS = [
     o.strip() for o in os.getenv('CORS_ALLOWED_ORIGINS', _default_cors).split(',') if o.strip()
 ]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.vercel\.app$",
+]
 CORS_ALLOW_CREDENTIALS = True
 
 # DRF Spectacular (API docs)
