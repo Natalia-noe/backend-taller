@@ -54,13 +54,19 @@ def incident_stream(request, incident_id: int):
 
     if user is None:
         raw_token = request.query_params.get('token') or request.GET.get('token')
+        print("RAW TOKEN EXISTS:", bool(raw_token))
+
+        if raw_token:
+            print("RAW TOKEN PREFIX:", raw_token[:30])
+
         if not raw_token:
             return HttpResponse('Unauthorized', status=401)
         try:
             jwt_auth = JWTAuthentication()
             validated = jwt_auth.get_validated_token(raw_token)
             user = jwt_auth.get_user(validated)
-        except (InvalidToken, AuthenticationFailed):
+        except (InvalidToken, AuthenticationFailed) as e:
+            print("SSE TOKEN ERROR:", str(e))
             return HttpResponse('Unauthorized', status=401)
 
     profile = getattr(user, 'client_profile', None)
