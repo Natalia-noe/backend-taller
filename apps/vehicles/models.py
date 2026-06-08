@@ -26,6 +26,7 @@ class Vehicle(models.Model):
 
     class Meta:
         db_table = 'vehicles'
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"{self.brand} {self.model} ({self.plate})"
